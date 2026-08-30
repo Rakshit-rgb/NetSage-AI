@@ -1,0 +1,91 @@
+case_id,pkt_file,evidence_file,evidence_status,symptom,topology_note,show_output,expected_fault,osi_layer,concept_tag,severity
+C01,Cisco__1__DNS_Problem_.pkt,,Pending,PENDING — evidence not yet supplied for this DNS Problem case.,,,,,DNS,Unknown
+C02,Cisco__2__DHCP_Problem_.pkt,Cisco @6.docx,Complete,"PC3 was switched to DHCP mode and displayed 'DHCP request failed' — no IPv4 address, gateway, or DNS server was received.","One Cisco 2911 router, one switch, and four PCs on a single LAN 192.168.10.0/24. Router provides DHCP via pool 'LAN' (network 192.168.10.0/24, default-router 192.168.10.1, dns-server 8.8.8.8, excluded 192.168.10.1).","Router# show ip interface brief
+GigabitEthernet0/0  192.168.10.1  YES manual  up  up
+Router# show run | include dhcp
+no service dhcp
+ip dhcp pool LAN
+ network 192.168.10.0 255.255.255.0
+ default-router 192.168.10.1
+ dns-server 8.8.8.8",DHCP service disabled on the router ('no service dhcp') despite the DHCP pool being fully configured,Layer 7 (Application),DHCP service disabled,High
+C03,Cisco__3__Gateway_Problem_.pkt,,Pending,PENDING — evidence not yet supplied for this Gateway Problem case.,,,,,Gateway,Unknown
+C04,Cisco__4__ACL_.pkt,Cisco @4.pdf,Complete,"PC0 (192.168.10.10) could not reach Server0 (192.168.20.20) — ping showed 'Destination host unreachable' from the local gateway 192.168.10.1, 4 sent / 0 received / 100% loss.","Router0 (G0/0 192.168.10.1/24 to Switch0/PC0, G0/1 192.168.20.1/24 to Switch1/PC1 and Server0), single router-on-a-stick style topology with two subnets.","Router#show access-lists
+Extended IP access list 100
+ 10 deny ip host 192.168.10.10 host 192.168.20.20
+ 20 permit ip any any
+Router#show run interface gigabitEthernet 0/1
+ ip access-group 100 out","Extended ACL 100 explicitly denies traffic from PC0 (192.168.10.10) to Server0 (192.168.20.20), applied outbound on Gi0/1",Layer 3/4 (Network/Transport),ACL misconfiguration,High
+C05,Cisco__5__TRUNK_.pkt,Cisco @15.pdf,Complete,Team needed to verify the inter-switch trunk carries both VLAN 10 (USERS) and VLAN 20 (STUDENTS); found only VLAN 1 and VLAN 20 permitted on Switch0 Fa0/2's allowed-VLAN list.,"Two Cisco 2960-24TT switches connected via Switch0 Fa0/2 <-> Switch1 Fa0/24. PC0/PC1 on Switch0, PC2/PC3 on Switch1. VLAN10=USERS, VLAN20=STUDENTS.","Switch0#show interfaces trunk
+Fa0/2  802.1Q  trunking  Native VLAN 1
+Vlans allowed on trunk: 1,20
+Switch0#show vlan brief
+VLAN10 USERS active Fa0/1
+VLAN20 STUDENTS active
+PC0>ping 192.168.20.12 -> 4/4 replies, 0% loss",VLAN 10 not included in the trunk's allowed-VLAN list on Switch0 Fa0/2 (only VLAN 1 and 20 permitted),Layer 2 (Data Link),Trunk allowed-VLAN list,Medium
+C06,Cisco__6__IP_Address_Conflict_.pkt,Cisco @17.pdf,Complete,"PC0 and PC1 were both assigned IPv4 address 192.168.10.10, producing an IP address conflict on the LAN.","One Cisco 2960 switch with PC0 (Fa0/1), PC1 (Fa0/2), PC2 (Fa0/3) directly connected; subnet 192.168.10.0/24.","PC0 IP config: 192.168.10.10/24, gateway 192.168.10.1
+PC1 IP config (fault): 192.168.10.10/24 (duplicate of PC0)
+PC2>arp -a and ping 192.168.10.10 used to confirm which host responds",Duplicate IP address 192.168.10.10 assigned to both PC0 and PC1,Layer 3 (Network),Duplicate IP,Medium
+C07,Cisco__7__Default_Wrong_Gateway_.pkt,Cisco @18.pdf,Complete,PC0 could ping its local gateway 192.168.10.1 but could not reach PC1 on 192.168.20.0/24 — ping to 192.168.20.10 returned 100% packet loss.,"Router0 (G0/0 192.168.10.1/24, G0/1 192.168.20.1/24), two switches, PC0 (192.168.10.10) and PC1 (192.168.20.10).","PC0>ping 192.168.20.10 -> Request timed out (100% loss)
+PC0>ping 192.168.10.1 -> Reply received
+PC0 IP config shows default gateway is NOT 192.168.10.1",PC0 configured with an incorrect default gateway instead of the correct 192.168.10.1,Layer 3 (Network),Gateway mismatch,High
+C08,Cisco__8__RIP_Routing_Error_.pkt,Cisco @20.pdf,Complete,PC0 could no longer reach PC1 on the remote LAN after previously working; the RIP-learned route to 192.168.20.0/24 was missing from Router0's routing table.,"Router0 (G0/0 192.168.10.1/24, G0/1 10.0.12.1/30) and Router1 (G0/1 10.0.12.2/30, G0/0 192.168.20.1/24) run RIPv2, no auto-summary. PC0 on 192.168.10.0/24, PC1 on 192.168.20.0/24.","Router1#show ip protocols
+Routing for Networks:
+ 10.0.0.0  (192.168.20.0 statement missing)
+Router0#show ip route
+(no R-coded route for 192.168.20.0/24)",Missing 'network 192.168.20.0' statement under Router1's RIP configuration,Layer 3 (Network),Routing protocol mismatch,High
+C09,Cisco__9__Post_Security_.pkt,Cisco @22.pdf,Complete,PC0 lost connectivity to PC1; the switch port Fa0/1 entered an err-disabled state after a port-security violation.,"Cisco 2960 switch with PC0 (192.168.10.10, Fa0/1) and PC1 (192.168.10.11); Port Security enabled on Fa0/1 with one allowed secure MAC and violation mode = shutdown.","Switch0#show port-security interface fa0/1
+Port Security: Enabled
+Port Status: Secure-shutdown
+Security Violation Count: 1
+%PSECURE-2: Security violation on Fa0/1",Incorrect secure MAC address configured on Fa0/1; PC0's real MAC triggered a security violation and err-disabled the port,Layer 2 (Data Link),Port security violation,High
+C10,Cisco__10__Wrong_Switch_Port_.pkt,Cisco @23.pdf,Complete,"PC0, expected in VLAN 10 (USERS) on Fa0/1, was not correctly reaching intended VLAN 10 peers because Fa0/1 was assigned to the wrong access VLAN.","Cisco 2960-24TT (Switch0) with VLAN 10 (USERS) and VLAN 20 (STUDENTS). PC0 on Fa0/1 (should be VLAN10, 192.168.10.10/24), PC1 on Fa0/2 (VLAN20, 192.168.20.10/24).","Switch0#show interfaces fastEthernet 0/1 switchport
+Administrative Mode: static access
+Access Mode VLAN: 20  (should be 10)",Fa0/1 assigned to the wrong access VLAN (20 instead of 10),Layer 2 (Data Link),VLAN misconfiguration,High
+C11,Cisco__11__Native_VLAN_Mismatch_.pkt,Cisco @24.pdf,Complete,End-to-end connectivity between the two switches' PCs failed due to inconsistent native VLANs on the inter-switch trunk.,"Switch0 and Switch1 interconnected via Fa0/24; VLAN10 used for the PCs, VLAN20 used for the native-VLAN fault demonstration.","Switch0#show interfaces trunk
+Fa0/24  802.1Q trunking  Native VLAN: 10
+Switch1#show interfaces trunk
+Fa0/24  802.1Q trunking  Native VLAN: 20","Native VLAN mismatch across the Fa0/24 trunk (Switch0=VLAN10, Switch1=VLAN20)",Layer 2 (Data Link),Native VLAN mismatch,Medium
+C12,Cisco__12__STP_Problem_.pkt,Cisco @27.pdf,Complete,Needed to confirm SW1 is the STP Root Bridge and that the redundant path in the SW1-SW2-SW3 triangle is correctly blocked to prevent a Layer-2 loop.,"SW1, SW2, SW3 form a Layer-2 triangle (PVST, VLAN 1); PC0 on SW2, PC1 on SW3.","SW1#show spanning-tree vlan 1
+Root ID  Priority 4097 (This bridge is the root)
+SW3#show spanning-tree
+Fa0/2 Root FWD | Fa0/1 Alternate BLK | Fa0/10 Designated FWD",SW1 not originally configured with the lowest STP priority to become Root Bridge (fixed by setting VLAN 1 priority to 4096 on SW1),Layer 2 (Data Link),STP root bridge / port role,Medium
+C13,Cisco__13__DNS_Configuration_Error_.pkt,Cisco @28.pdf,Complete,"PC0 could ping Server0 by IP (192.168.10.11) but nslookup and ping to www.netsage.local both failed, indicating hostname resolution was not working.","Single LAN 192.168.10.0/24: PC0 (client, 192.168.10.10) and Server0 (DNS+Web, 192.168.10.11) via Switch0. A record: www.netsage.local -> 192.168.10.11.","PC0>nslookup www.netsage.local -> Request timed out (PC0's DNS server setting was wrong)
+After correcting PC0's DNS server to 192.168.10.11: nslookup www.netsage.local -> 192.168.10.11 (success)",PC0 had an incorrect/missing DNS server configuration (should point to Server0 at 192.168.10.11),Layer 7 (Application),Wrong DNS server,Medium
+C14,Cisco__14__NAT_Overload_Error_.pkt,Cisco @9.docx,Complete,PC0 (192.168.10.10) could not reach the external server 198.51.100.10 — ping showed 4 sent / 0 received / 100% loss — even though the local gateway and Router0-to-Router1 path both worked.,"Router0 performs PAT/NAT overload for 192.168.10.0/24 (G0/0 inside 192.168.10.1, G0/1 outside 203.0.113.1). Router1 simulates the ISP. External Server0 at 198.51.100.10.","Router0#show ip nat translations
+(empty)
+Router0#show running-config | include ip nat
+(overload rule missing — no 'ip nat inside source list 1 interface g0/1 overload')",Missing NAT overload/PAT rule on Router0 ('ip nat inside source list 1 interface gigabitEthernet 0/1 overload' was removed),Layer 3 (Network),NAT misconfiguration,High
+C15,Cisco__15__FTP_Server_Error_.pkt,,Pending,PENDING — evidence not yet supplied for this FTP Server Error case.,,,,,FTP,Unknown
+C16,Cisco__16__Baseline_VLAN20_.pkt,,Pending,PENDING — evidence not yet supplied for this Baseline VLAN20 case.,,,,,VLAN,Unknown
+C17,Cisco__17__DHCP_Problem_.pkt,,Pending,PENDING — evidence not yet supplied for this (second) DHCP Problem case.,,,,,DHCP,Unknown
+C18,Cisco__18__DNS_Troubleshooting_.pkt,,Pending,PENDING — evidence not yet supplied for this DNS Troubleshooting case.,,,,,DNS,Unknown
+C19,Cisco__19__Static_RouterError_.pkt,Cisco @11.docx,Complete,PC0 could no longer reach PC1 at 192.168.30.10 — ping returned 100% packet loss — after previously working.,"Three-router chain: R0 (192.168.10.1 LAN, 10.0.0.1 to R1), R1 (10.0.0.2, 20.0.0.1 to R2), R2 (20.0.0.2, 192.168.30.1 LAN).","R0#show ip route
+192.168.10.0/24 and 10.0.0.0/30 connected; 20.0.0.0/30 via R1; NO route to 192.168.30.0/24",Static route to 192.168.30.0/24 via 10.0.0.2 was removed from Router0 ('no ip route 192.168.30.0 255.255.255.0 10.0.0.2'),Layer 3 (Network),Missing route,High
+C20,Cisco__20__Routing_Troubleshooting_.pkt,Cisco @10.docx,Complete,PC0 could reach its own gateway but could not reach remote PC2 on 192.168.20.0/24.,"Two LANs (192.168.10.0/24, 192.168.20.0/24) connected via Router0 and Router1 across a 10.0.0.0/30 transit link.","Router0#show ip route
+connected routes for 192.168.10.0/24 and 10.0.0.0/30 present; NO route for 192.168.20.0/24",Missing static routes on Router0 (to 192.168.20.0/24) and Router1 (return route to 192.168.10.0/24),Layer 3 (Network),Missing route,High
+C21,Cisco__21__Wrong_SubnetMask_.pkt,Cisco @12.docx,Complete,PC1 could not communicate correctly with PC0/PC2 on the same LAN due to an incorrect subnet mask.,"One router, one switch, three PCs, all intended for 192.168.10.0/24: PC0 (.10), PC1 (.11), PC2 (.12).","PC1>ipconfig
+IPv4 Address: 192.168.10.11
+Subnet Mask: 255.255.0.0  (should be 255.255.255.0)
+Default Gateway: 192.168.10.1",PC1 configured with subnet mask 255.255.0.0 instead of 255.255.255.0,Layer 3 (Network),Wrong subnet mask,Medium
+C22,Cisco__22__OSPF_RoutingError_.pkt,Cisco @13.docx,Complete,Router1 stopped learning Router0's LAN network via OSPF even though the R0-R1 OSPF adjacency remained FULL.,"Router0 (G0/0 192.168.10.1/24) and Router1 (G0/0 192.168.20.1/24) connected via 10.0.0.0/30, OSPF area 0.","Router0#show run | section router ospf
+network 192.168.100.0 0.0.0.255 area 0  (wrong; actual LAN is 192.168.10.0/24)
+Router1#show ip route
+(no OSPF route to 192.168.10.0/24)",Incorrect OSPF network statement on Router0 (192.168.100.0/24 instead of the actual LAN 192.168.10.0/24),Layer 3 (Network),Routing protocol mismatch,High
+C23,Cisco__23__VLAN_Mismatch_.pkt,Cisco @16.docx,Complete,"PC0 could no longer ping PC1 after previously working — ping returned 4 sent / 4 lost, 100% packet loss.","Single Cisco 2960-24TT switch; PC0 (Fa0/1) and PC1 (Fa0/2), both on 192.168.20.0/24, intended for VLAN 20.","Switch0#show vlan brief
+Fa0/1 -> VLAN 20
+Fa0/2 -> VLAN 30  (should be VLAN 20)",Fa0/2 assigned to VLAN 30 instead of VLAN 20,Layer 2 (Data Link),VLAN misconfiguration,High
+C24,Cisco__24__Shutdown_Interfaces_.pkt,Cisco @14.docx,Complete,PC0 could not reach the router gateway 192.168.10.1 after the router's LAN interface was disabled.,Router0 (2911) -> Switch0 (2960-24TT) -> PC0 (192.168.10.10/24); GigabitEthernet0/0 = 192.168.10.1/24.,"R0#show ip interface brief
+GigabitEthernet0/0  192.168.10.1  YES manual  administratively down  down",GigabitEthernet0/0 administratively shut down on Router0,Layer 1 (Physical),Interface down,High
+C25,Cisco__25__Access_Port_Error_.pkt,Cisco @19.docx,Complete,PC1 could not reach PC2 on the same intended VLAN because the PC-facing switch port was operating as a trunk instead of an access port.,"SW1 and SW2 with a Gi0/1 inter-switch trunk (VLANs 10,20); PC1 (VLAN10, 192.168.10.10) and PC2 (VLAN10, 192.168.10.20) on SW2's Fa0/1/Fa0/2.","SW2#show interfaces trunk
+Fa0/1 and Gi0/1 both show trunking  (Fa0/1 should be an access port, not trunk)",PC-facing interface Fa0/1 on SW2 configured as a trunk instead of an access port in VLAN 10,Layer 2 (Data Link),Access/trunk mode mismatch,Medium
+C26,Cisco__26__EtherChannel_Error_.pkt,Cisco @21.docx,Complete,The SW1-SW2 EtherChannel lost one of its three bundled physical links; show etherchannel summary showed Fa0/23 suspended (S) instead of bundled (P).,Three FastEthernet links (Fa0/21-23) between SW1 and SW2 bundled into Port-Channel 1 using LACP.,"SW2#show etherchannel summary
+Po1(SU)  Fa0/21(P)  Fa0/22(P)  Fa0/23(S)","SW2 Fa0/23 configured with switchport mode access instead of trunk, and LACP passive instead of active, excluding it from the bundle",Layer 2 (Data Link),EtherChannel member mismatch,Medium
+C27,Cisco__27__HTTP_WebServer_Error_.pkt,Cisco @26.docx,Complete,PC1 could ping Server1 successfully (0% loss) but the browser could not load http://192.168.20.10 — showed 'Server Reset Connection'.,"PC1 (192.168.10.10) -> Switch1 -> R1 (G0/0 192.168.10.1, G0/1 192.168.20.1) -> Switch2 -> Server1 (192.168.20.10).","PC1>ping 192.168.20.10 -> 4/4 replies, 0% loss
+Browser: http://192.168.20.10 -> 'Server Reset Connection'
+Server1 Services -> HTTP: OFF","HTTP service disabled on Server1 — an application-layer fault, not a network/IP issue",Layer 7 (Application),Application service disabled,Medium
+C28,Cisco__28__DHCP_Relay_Error_.pkt,Cisco @25.docx,Complete,"PC0 (VLAN 20) and PC1 (VLAN 30) both remained on DHCP but received no IPv4 address, subnet mask, or default gateway.","Server0 (DHCP, 192.168.10.10) -> Switch0 -> Router0 (inter-VLAN routing, G0/1.20 and G0/1.30 subinterfaces) -> Switch1 -> PC0 (VLAN20)/PC1 (VLAN30).","Router0#show run interface gigabitEthernet 0/1.20
+(no ip helper-address configured)
+Router0#show run interface gigabitEthernet 0/1.30
+(no ip helper-address configured)",'ip helper-address 192.168.10.10' removed from both G0/1.20 and G0/1.30 subinterfaces,Layer 3 (Network),DHCP relay missing,High
+C29,Cisco__29__NAT_Working_Baseline_.pkt,,Pending,PENDING — evidence not yet supplied for this NAT Working Baseline case.,,,,,NAT,Unknown
+C30,Cisco__30__Inter-VLAN_Routing_.pkt,,Pending,PENDING — evidence not yet supplied for this Inter-VLAN Routing case.,,,,,Inter-VLAN Routing,Unknown
