@@ -1,0 +1,31 @@
+case_id,expected_fault,checks_triggered,checker_notes,num_checks_triggered
+C01,,not run,Evidence pending — rule checker not run for this case yet.,0
+C02,DHCP service disabled on the router ('no service dhcp') despite the DHCP pool being fully configured,none,No deterministic rule matched — relies on AI/human judgment.,0
+C03,,not run,Evidence pending — rule checker not run for this case yet.,0
+C04,"Extended ACL 100 explicitly denies traffic from PC0 (192.168.10.10) to Server0 (192.168.20.20), applied outbound on Gi0/1",none,No deterministic rule matched — relies on AI/human judgment.,0
+C05,VLAN 10 not included in the trunk's allowed-VLAN list on Switch0 Fa0/2 (only VLAN 1 and 20 permitted),none,No deterministic rule matched — relies on AI/human judgment.,0
+C06,Duplicate IP address 192.168.10.10 assigned to both PC0 and PC1,duplicate_ip,Duplicate IP detected: 192.168.10.10 appears more than once.,1
+C07,PC0 configured with an incorrect default gateway instead of the correct 192.168.10.1,none,No deterministic rule matched — relies on AI/human judgment.,0
+C08,Missing 'network 192.168.20.0' statement under Router1's RIP configuration,none,No deterministic rule matched — relies on AI/human judgment.,0
+C09,Incorrect secure MAC address configured on Fa0/1; PC0's real MAC triggered a security violation and err-disabled the port,none,No deterministic rule matched — relies on AI/human judgment.,0
+C10,Fa0/1 assigned to the wrong access VLAN (20 instead of 10),none,No deterministic rule matched — relies on AI/human judgment.,0
+C11,"Native VLAN mismatch across the Fa0/24 trunk (Switch0=VLAN10, Switch1=VLAN20)",none,No deterministic rule matched — relies on AI/human judgment.,0
+C12,SW1 not originally configured with the lowest STP priority to become Root Bridge (fixed by setting VLAN 1 priority to 4096 on SW1),none,No deterministic rule matched — relies on AI/human judgment.,0
+C13,PC0 had an incorrect/missing DNS server configuration (should point to Server0 at 192.168.10.11),none,No deterministic rule matched — relies on AI/human judgment.,0
+C14,Missing NAT overload/PAT rule on Router0 ('ip nat inside source list 1 interface gigabitEthernet 0/1 overload' was removed),none,No deterministic rule matched — relies on AI/human judgment.,0
+C15,,not run,Evidence pending — rule checker not run for this case yet.,0
+C16,,not run,Evidence pending — rule checker not run for this case yet.,0
+C17,,not run,Evidence pending — rule checker not run for this case yet.,0
+C18,,not run,Evidence pending — rule checker not run for this case yet.,0
+C19,Static route to 192.168.30.0/24 via 10.0.0.2 was removed from Router0 ('no ip route 192.168.30.0 255.255.255.0 10.0.0.2'),mask_mismatch,"Multiple CIDR prefix lengths found on hosts expected to share a subnet: ['24', '30'].",1
+C20,Missing static routes on Router0 (to 192.168.20.0/24) and Router1 (return route to 192.168.10.0/24),mask_mismatch,"Multiple CIDR prefix lengths found on hosts expected to share a subnet: ['24', '30'].",1
+C21,PC1 configured with subnet mask 255.255.0.0 instead of 255.255.255.0,none,No deterministic rule matched — relies on AI/human judgment.,0
+C22,Incorrect OSPF network statement on Router0 (192.168.100.0/24 instead of the actual LAN 192.168.10.0/24),none,No deterministic rule matched — relies on AI/human judgment.,0
+C23,Fa0/2 assigned to VLAN 30 instead of VLAN 20,none,No deterministic rule matched — relies on AI/human judgment.,0
+C24,GigabitEthernet0/0 administratively shut down on Router0,interface_down,Interface is administratively down (shutdown) — a human should verify this was intentional.,1
+C25,PC-facing interface Fa0/1 on SW2 configured as a trunk instead of an access port in VLAN 10,none,No deterministic rule matched — relies on AI/human judgment.,0
+C26,"SW2 Fa0/23 configured with switchport mode access instead of trunk, and LACP passive instead of active, excluding it from the bundle",none,No deterministic rule matched — relies on AI/human judgment.,0
+C27,"HTTP service disabled on Server1 — an application-layer fault, not a network/IP issue",none,No deterministic rule matched — relies on AI/human judgment.,0
+C28,'ip helper-address 192.168.10.10' removed from both G0/1.20 and G0/1.30 subinterfaces,none,No deterministic rule matched — relies on AI/human judgment.,0
+C29,,not run,Evidence pending — rule checker not run for this case yet.,0
+C30,,not run,Evidence pending — rule checker not run for this case yet.,0
