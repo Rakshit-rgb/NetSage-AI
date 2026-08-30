@@ -1,0 +1,31 @@
+case_id,review_status,reviewer_notes
+C01,Pending Evidence,Case not yet reviewed — awaiting evidence document.
+C02,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C03,Pending Evidence,Case not yet reviewed — awaiting evidence document.
+C04,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C05,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C06,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C07,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C08,Edited,"AI blamed auto-summary, but show ip protocols clearly lists 'Routing for Networks: 10.0.0.0' with no 192.168.20.0 entry at all — the network statement itself is missing, not an auto-summary setting. Reviewer corrected root_cause and evidence citation."
+C09,Rejected,"AI assumed a manual shutdown, but the evidence explicitly shows a %PSECURE-2 violation message and Secure-shutdown status with Violation Count: 1 — this is a port-security err-disable, a different mechanism with a different fix (correct the secure MAC + 'shutdown'/'no shutdown' recovery, not just 'no shutdown'). Reviewer rejected and re-ran with a prompt reminder to check for PSECURE messages before assuming a plain admin shutdown."
+C10,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C11,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C12,Edited,"AI said VLAN 1 wasn't enabled for STP, but the evidence shows STP running fine — SW1 simply didn't have the lowest priority to win the root election. Reviewer corrected root_cause to the priority/root-election explanation and cited the 'This bridge is the root' line."
+C13,Edited,"AI assumed the DNS server process was down, but the evidence shows Server0's own A record and service were fine — the fault was PC0's client-side DNS server setting pointing to the wrong address. Reviewer corrected root_cause to point at the client configuration, not the server."
+C14,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C15,Pending Evidence,Case not yet reviewed — awaiting evidence document.
+C16,Pending Evidence,Case not yet reviewed — awaiting evidence document.
+C17,Pending Evidence,Case not yet reviewed — awaiting evidence document.
+C18,Pending Evidence,Case not yet reviewed — awaiting evidence document.
+C19,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C20,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C21,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C22,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C23,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C24,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C25,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C26,Edited,"AI guessed a duplex mismatch, a generic EtherChannel symptom, but show etherchannel summary plus the interface config clearly show Fa0/23 in access mode with LACP passive while its peers are trunk/active — a configuration mismatch, not a duplex issue. Reviewer corrected root_cause and evidence citation."
+C27,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C28,Accepted,AI diagnosis matched the expected fault and cited the correct evidence.
+C29,Pending Evidence,Case not yet reviewed — awaiting evidence document.
+C30,Pending Evidence,Case not yet reviewed — awaiting evidence document.
