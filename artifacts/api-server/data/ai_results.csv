@@ -1,0 +1,31 @@
+case_id,ai_root_cause,ai_confidence,ai_matches_expected
+C01,Not yet diagnosed — evidence pending,,pending
+C02,DHCP service disabled on the router (no service dhcp) with the pool otherwise intact,high,yes
+C03,Not yet diagnosed — evidence pending,,pending
+C04,"Extended ACL 100 denies PC0 -> Server0 traffic, applied outbound on Gi0/1",high,yes
+C05,VLAN 10 missing from the trunk's allowed-VLAN list on Switch0 Fa0/2,high,yes
+C06,Duplicate IP address 192.168.10.10 assigned to two hosts,high,yes
+C07,PC0's default gateway does not match the router interface on its subnet,high,yes
+C08,RIP is not advertising the remote LAN because auto-summary is misconfigured on Router1,medium,no
+C09,Fa0/1 was manually shut down by an administrator,medium,no
+C10,Fa0/1 assigned to the wrong access VLAN (20 instead of 10),high,yes
+C11,Native VLAN mismatch between Switch0 and Switch1 on the Fa0/24 trunk,high,yes
+C12,VLAN 1 is not enabled for spanning-tree on SW1,medium,no
+C13,Server0's DNS service is not running,medium,no
+C14,NAT overload/PAT rule missing on Router0,high,yes
+C15,Not yet diagnosed — evidence pending,,pending
+C16,Not yet diagnosed — evidence pending,,pending
+C17,Not yet diagnosed — evidence pending,,pending
+C18,Not yet diagnosed — evidence pending,,pending
+C19,Static route to 192.168.30.0/24 missing on Router0,high,yes
+C20,Missing static routes on Router0 and Router1 for each other's LANs,high,yes
+C21,PC1 configured with the wrong subnet mask (255.255.0.0 instead of 255.255.255.0),high,yes
+C22,Incorrect OSPF network statement on Router0 (192.168.100.0/24 instead of 192.168.10.0/24),high,yes
+C23,Fa0/2 assigned to VLAN 30 instead of VLAN 20,high,yes
+C24,GigabitEthernet0/0 administratively shut down on Router0,high,yes
+C25,PC-facing Fa0/1 on SW2 configured as trunk instead of access mode,high,yes
+C26,Duplex mismatch on SW2 Fa0/23 causing it to drop from the EtherChannel,medium,no
+C27,HTTP service disabled on Server1,high,yes
+C28,ip helper-address missing on the VLAN 20 and VLAN 30 router subinterfaces,high,yes
+C29,Not yet diagnosed — evidence pending,,pending
+C30,Not yet diagnosed — evidence pending,,pending
