@@ -512,8 +512,8 @@ This project was developed by the following team members:
 
 | S. No. | Team Member       | Responsibility                                                            |
 | -----: | ----------------- | ------------------------------------------------------------------------- |
-|      1 | **Rakshit Kumar** | Networking, Cisco Packet Tracer, Troubleshooting & AI Prompt Library      |
-|      2 | **Yashika Malik** | Networking, Troubleshooting, Evidence Documentation & Root Cause Analysis |
+|      1 | **Rakshit Kumar** | Networking, Cisco Packet Tracer, Troubleshooting & AI Prompt Library ,Documentation     |
+|      2 | **Yashika Malik** | Networking,Cisco Packet Tracer, Troubleshooting, Evidence Documentation & Root Cause Analysis |
 
 ### Project Team
 
